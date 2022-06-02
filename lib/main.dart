@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'music.dart';
+import 'models/music.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:flutter_launcher_icons/android.dart';
 import 'package:flutter_launcher_icons/constants.dart';
@@ -34,7 +34,8 @@ class YnofifySFW extends StatefulWidget {
   State<YnofifySFW> createState() => _YnofifySFWState();
 }
 
-class _YnofifySFWState extends State<YnofifySFW> {
+class _YnofifySFWState extends State<YnofifySFW> with TickerProviderStateMixin {
+  Duration duration = new Duration(seconds: 0);
   int pos = 0;
   int totalSongs = musicList.length;
   bool isPlaying = false;
@@ -74,7 +75,9 @@ class _YnofifySFWState extends State<YnofifySFW> {
               returnIcon(isPlaying ? Icons.pause : Icons.play_arrow, ActionMusic.play),
               SizedBox( width: 20,),
               returnIcon(Icons.skip_next, ActionMusic.forward),
-          ],)        
+          ],),  
+          SizedBox(height: 20),
+          songDuration()
         ],
       ),
     );
@@ -145,7 +148,11 @@ class _YnofifySFWState extends State<YnofifySFW> {
 
   Future<void> initSong(String urlSong) async {
     await _player.setAudioSource(
-        AudioSource.uri(Uri.parse(urlSong)));
+        AudioSource.uri(Uri.parse(urlSong))).then((value) => {
+      setState(() {
+        duration = value!;
+      })
+    });
   }
 
   Future playMusic() async {
@@ -154,6 +161,20 @@ class _YnofifySFWState extends State<YnofifySFW> {
 
   Future pauseMusic() async {
     await _player.pause();
+  }
+
+   Widget songDuration() {
+    
+      return Center(
+        child: Text(
+          duration.toString(),
+          textAlign: TextAlign.center,
+          style: const TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Color.fromARGB(255, 255, 255, 255),
+            fontSize: 20.0)
+            ),
+      );
   }
 }
 
